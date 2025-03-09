@@ -1,883 +1,921 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>XO Game</title>
-    <link rel="stylesheet" href="src/styles/main.css">
+    <link rel="stylesheet" href="src/styles/main.css" />
     <style>
-        body {
-            background: linear-gradient(to bottom, #000000, #1a1a1a);
-            color: white;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            font-family: Arial, sans-serif;
-            min-height: 100vh;
-            overflow: hidden;
-        }
+      body {
+        background: linear-gradient(to bottom, #000000, #1a1a1a);
+        color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        font-family: Arial, sans-serif;
+        min-height: 100vh;
+        overflow: hidden;
+      }
 
-        #game {
-            background-color: #1a1a1a;
-            padding: 2rem;
-            border-radius: 15px;
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
-            text-align: center;
-        }
+      #game {
+        background-color: #1a1a1a;
+        padding: 2rem;
+        border-radius: 15px;
+        box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+        text-align: center;
+      }
 
-        .board {
-            display: grid;
-            grid-template-columns: repeat(3, 100px);
-            gap: 5px;
-            background-color: #333;
-            padding: 10px;
-            border-radius: 10px;
-            margin: 20px auto;
-        }
+      .board {
+        display: grid;
+        grid-template-columns: repeat(3, 100px);
+        gap: 5px;
+        background-color: #333;
+        padding: 10px;
+        border-radius: 10px;
+        margin: 20px auto;
+      }
 
-        .cell {
-            width: 100px;
-            height: 100px;
-            border: 2px solid #444;
-            background-color: #222;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 40px;
-            cursor: pointer;
-            border-radius: 5px;
-            transition: background-color 0.3s;
-        }
+      .cell {
+        width: 100px;
+        height: 100px;
+        border: 2px solid #444;
+        background-color: #222;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 40px;
+        cursor: pointer;
+        border-radius: 5px;
+        transition: background-color 0.3s;
+      }
 
-        .cell:hover {
-            background-color: #2a2a2a;
-        }
+      .cell:hover {
+        background-color: #2a2a2a;
+      }
 
-        .cell.x {
-            color: #ff4444;
-        }
+      .cell.x {
+        color: #ff4444;
+      }
 
-        .cell.o {
-            color: #ffffff;
-        }
+      .cell.o {
+        color: #ffffff;
+      }
 
-        .winning-line {
-            background-color: rgba(0, 255, 0, 0.2) !important;
-        }
+      .winning-line {
+        background-color: rgba(0, 255, 0, 0.2) !important;
+      }
 
-        button {
-            background-color: #444;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: background-color 0.3s;
-        }
+      button {
+        background-color: #444;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: background-color 0.3s;
+      }
 
-        button:hover {
-            background-color: #555;
-        }
+      button:hover {
+        background-color: #555;
+      }
 
-        .symbol-btn {
-            width: 80px;
-            height: 80px;
-            font-size: 40px;
-            background-color: #222;
-            border: 2px solid #444;
-        }
+      .symbol-btn {
+        width: 80px;
+        height: 80px;
+        font-size: 40px;
+        background-color: #222;
+        border: 2px solid #444;
+      }
 
-        .symbol-btn:hover {
-            background-color: #2a2a2a;
-        }
+      .symbol-btn:hover {
+        background-color: #2a2a2a;
+      }
 
-        input[type="text"] {
-            width: 200px;
-            font-size: 16px;
-            text-align: center;
-            margin-bottom: 20px;
-            transition: border-color 0.3s;
-        }
+      input[type="text"] {
+        width: 200px;
+        font-size: 16px;
+        text-align: center;
+        margin-bottom: 20px;
+        transition: border-color 0.3s;
+      }
 
-        input[type="text"]:focus {
-            outline: none;
-            border-color: #555;
-        }
+      input[type="text"]:focus {
+        outline: none;
+        border-color: #555;
+      }
 
-        .mode-btn {
-            padding: 15px 30px;
-            font-size: 18px;
-            background-color: #333;
-            transition: all 0.3s ease;
-        }
+      .mode-btn {
+        padding: 15px 30px;
+        font-size: 18px;
+        background-color: #333;
+        transition: all 0.3s ease;
+      }
 
-        .mode-btn:hover {
-            background-color: #444;
-            transform: scale(1.05);
-        }
+      .mode-btn:hover {
+        background-color: #444;
+        transform: scale(1.05);
+      }
 
-        .video-popup {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100vh;
-            background: #000;
-            z-index: 1000;
-        }
+      .video-popup {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh;
+        background: #000;
+        z-index: 1000;
+      }
 
-        .video-popup.active {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
+      .video-popup.active {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
 
-        .video-container {
-            width: 100%;
-            height: 100vh;
-            position: relative;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
+      .video-container {
+        width: 100%;
+        height: 100vh;
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
 
-        #characterVideo {
-            width: auto;
-            height: auto;
-            max-width: 100%;
-            max-height: 100vh;
-            display: block;
-            object-fit: contain; /* Changed from cover to contain */
-            background: #000;
-        }
+      #characterVideo {
+        width: auto;
+        height: auto;
+        max-width: 100%;
+        max-height: 100vh;
+        display: block;
+        object-fit: contain; /* Changed from cover to contain */
+        background: #000;
+      }
 
-        .close-video {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            color: white;
-            font-size: 40px;
-            cursor: pointer;
-            z-index: 1001;
-            background: rgba(0, 0, 0, 0.5);
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+      .close-video {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        color: white;
+        font-size: 40px;
+        cursor: pointer;
+        z-index: 1001;
+        background: rgba(0, 0, 0, 0.5);
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
 
-        .cell img {
-            width: 80%;
-            height: 80%;
-            object-fit: contain;
-            display: block;
-            margin: auto;
-        }
+      .cell img {
+        width: 80%;
+        height: 80%;
+        object-fit: contain;
+        display: block;
+        margin: auto;
+      }
 
-        .cell.luffy-symbol {
-            padding: 10px;
-            background-color: #2a2a2a;
-            position: relative;
-        }
+      .cell.luffy-symbol {
+        padding: 10px;
+        background-color: #2a2a2a;
+        position: relative;
+      }
 
-        .cell.luffy-symbol img {
-            width: 60%;
-            height: 60%;
-            object-fit: contain;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 1;
-        }
+      .cell.luffy-symbol img {
+        width: 60%;
+        height: 60%;
+        object-fit: contain;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 1;
+      }
 
-        .cell.luffy-symbol::after {
-            content: attr(data-symbol);
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 40px;
-            color: #fff;
-            z-index: 2;
-        }
+      .cell.luffy-symbol::after {
+        content: attr(data-symbol);
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 40px;
+        color: #fff;
+        z-index: 2;
+      }
 
-        /* Add these styles to your existing CSS */
-        .cell.straw-hat-symbol {
-            position: relative;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
+      /* Add these styles to your existing CSS */
+      .cell.straw-hat-symbol {
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
 
-        .cell.straw-hat-symbol img {
-            width: 70%;
-            height: 70%;
-            object-fit: contain;
-        }
+      .cell.straw-hat-symbol img {
+        width: 70%;
+        height: 70%;
+        object-fit: contain;
+      }
 
-        .cell.o-symbol {
-            font-size: 40px;
-            color: #ffffff;
-        }
+      .cell.o-symbol {
+        font-size: 40px;
+        color: #ffffff;
+      }
 
-        /* One Piece themed styles */
-        .onepiece-theme .board {
-            background-image: url('./onepiece-bg.jpg');
-            background-size: cover;
-            background-position: center;
-            border: 5px solid #d4af37; /* Gold border */
-            box-shadow: 0 0 20px #d4af37;
-        }
+      /* One Piece themed styles */
+      .onepiece-theme .board {
+        background-image: url("./onepiece-bg.jpg");
+        background-size: cover;
+        background-position: center;
+        border: 5px solid #d4af37; /* Gold border */
+        box-shadow: 0 0 20px #d4af37;
+      }
 
-        .onepiece-theme .cell {
-            background-color: rgba(34, 34, 34, 0.8);
-            border: 2px solid #d4af37;
-            transform: scale(1);
-            transition: all 0.3s ease;
-        }
+      .onepiece-theme .cell {
+        background-color: rgba(34, 34, 34, 0.8);
+        border: 2px solid #d4af37;
+        transform: scale(1);
+        transition: all 0.3s ease;
+      }
 
-        .onepiece-theme .cell:hover {
-            background-color: rgba(42, 42, 42, 0.9);
-            transform: scale(1.05);
-            box-shadow: 0 0 15px #d4af37;
-        }
+      .onepiece-theme .cell:hover {
+        background-color: rgba(42, 42, 42, 0.9);
+        transform: scale(1.05);
+        box-shadow: 0 0 15px #d4af37;
+      }
 
-        .onepiece-theme h1, 
-        .onepiece-theme h2 {
-            font-family: 'Impact', fantasy;
-            color: #d4af37;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-            letter-spacing: 2px;
-        }
+      .onepiece-theme h1,
+      .onepiece-theme h2 {
+        font-family: "Impact", fantasy;
+        color: #d4af37;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        letter-spacing: 2px;
+      }
 
-        .onepiece-theme button {
-            background: linear-gradient(45deg, #d4af37, #ffd700);
-            color: #000;
-            font-weight: bold;
-            border: 2px solid #d4af37;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            box-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
-        }
+      .onepiece-theme button {
+        background: linear-gradient(45deg, #d4af37, #ffd700);
+        color: #000;
+        font-weight: bold;
+        border: 2px solid #d4af37;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        box-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+      }
 
-        .onepiece-theme button:hover {
-            background: linear-gradient(45deg, #ffd700, #d4af37);
-            transform: translateY(-2px);
-            box-shadow: 0 0 20px rgba(212, 175, 55, 0.7);
-        }
+      .onepiece-theme button:hover {
+        background: linear-gradient(45deg, #ffd700, #d4af37);
+        transform: translateY(-2px);
+        box-shadow: 0 0 20px rgba(212, 175, 55, 0.7);
+      }
 
-        .onepiece-theme #status {
-            color: #d4af37;
-            font-size: 24px;
-            font-weight: bold;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-        }
+      .onepiece-theme #status {
+        color: #d4af37;
+        font-size: 24px;
+        font-weight: bold;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+      }
 
-        /* One Piece theme overrides */
-        .onepiece-theme {
-            background: linear-gradient(to bottom, #000000, #1a1a1a);
-        }
+      /* One Piece theme overrides */
+      .onepiece-theme {
+        background: linear-gradient(to bottom, #000000, #1a1a1a);
+      }
 
-        .onepiece-theme .board {
-            border: 5px solid #d4af37;
-            box-shadow: 0 0 20px #d4af37;
-            background-color: transparent;
-        }
+      .onepiece-theme .board {
+        border: 5px solid #d4af37;
+        box-shadow: 0 0 20px #d4af37;
+        background-color: transparent;
+      }
 
-        .onepiece-theme * {
-            transition: all 0.3s ease;
-        }
+      .onepiece-theme * {
+        transition: all 0.3s ease;
+      }
 
-        /* Add or update these CSS rules */
-        .onepiece-theme {
-            background: url('./onepiece-bg.jpg') center/cover no-repeat fixed !important;
-        }
+      /* Add or update these CSS rules */
+      .onepiece-theme {
+        background: url("./onepiece-bg.jpg") center/cover no-repeat fixed !important;
+      }
 
-        .onepiece-theme #game {
-            background-color: rgba(26, 26, 26, 0.9);
-            border: 3px solid #d4af37;
-            box-shadow: 0 0 30px #d4af37;
-        }
+      .onepiece-theme #game {
+        background-color: rgba(26, 26, 26, 0.9);
+        border: 3px solid #d4af37;
+        box-shadow: 0 0 30px #d4af37;
+      }
 
-        .onepiece-theme .board {
-            background-image: url('./onepiece-bg.jpg');
-            background-size: cover;
-            background-position: center;
-            border: 5px solid #d4af37;
-            box-shadow: 0 0 20px #d4af37;
-        }
+      .onepiece-theme .board {
+        background-image: url("./onepiece-bg.jpg");
+        background-size: cover;
+        background-position: center;
+        border: 5px solid #d4af37;
+        box-shadow: 0 0 20px #d4af37;
+      }
 
-        .onepiece-theme .cell {
-            background-color: rgba(34, 34, 34, 0.8);
-            border: 2px solid #d4af37;
-            transition: all 0.3s ease;
-        }
+      .onepiece-theme .cell {
+        background-color: rgba(34, 34, 34, 0.8);
+        border: 2px solid #d4af37;
+        transition: all 0.3s ease;
+      }
 
-        /* Update the One Piece themed styles */
-        .onepiece-theme {
-            background: url('./onep.png') center/cover no-repeat fixed !important;
-        }
+      /* Update the One Piece themed styles */
+      .onepiece-theme {
+        background: url("./onep.png") center/cover no-repeat fixed !important;
+      }
 
-        .onepiece-theme .board {
-            background-image: url('./onep.png');
-            background-size: cover;
-            background-position: center;
-            border: 5px solid #d4af37;
-            box-shadow: 0 0 20px #d4af37;
-        }
+      .onepiece-theme .board {
+        background-image: url("./onep.png");
+        background-size: cover;
+        background-position: center;
+        border: 5px solid #d4af37;
+        box-shadow: 0 0 20px #d4af37;
+      }
 
-        /* Remove all existing .onepiece-theme styles and replace with these */
-        .onepiece-theme {
-            background: url('./onep.png') center/cover no-repeat fixed !important;
-        }
+      /* Remove all existing .onepiece-theme styles and replace with these */
+      .onepiece-theme {
+        background: url("./onep.png") center/cover no-repeat fixed !important;
+      }
 
-        .onepiece-theme #game {
-            background-color: rgba(26, 26, 26, 0.9);
-            border: 3px solid #d4af37;
-            box-shadow: 0 0 30px #d4af37;
-        }
+      .onepiece-theme #game {
+        background-color: rgba(26, 26, 26, 0.9);
+        border: 3px solid #d4af37;
+        box-shadow: 0 0 30px #d4af37;
+      }
 
-        .onepiece-theme .board {
-            background-image: url('./onep.png');
-            background-size: cover;
-            background-position: center;
-            border: 5px solid #d4af37;
-            box-shadow: 0 0 20px #d4af37;
-        }
+      .onepiece-theme .board {
+        background-image: url("./onep.png");
+        background-size: cover;
+        background-position: center;
+        border: 5px solid #d4af37;
+        box-shadow: 0 0 20px #d4af37;
+      }
 
-        .onepiece-theme .cell {
-            background-color: rgba(34, 34, 34, 0.8);
-            border: 2px solid #d4af37;
-            transition: all 0.3s ease;
-        }
+      .onepiece-theme .cell {
+        background-color: rgba(34, 34, 34, 0.8);
+        border: 2px solid #d4af37;
+        transition: all 0.3s ease;
+      }
 
-        .onepiece-theme .cell:hover {
-            background-color: rgba(42, 42, 42, 0.9);
-            transform: scale(1.05);
-            box-shadow: 0 0 15px #d4af37;
-        }
+      .onepiece-theme .cell:hover {
+        background-color: rgba(42, 42, 42, 0.9);
+        transform: scale(1.05);
+        box-shadow: 0 0 15px #d4af37;
+      }
 
-        .onepiece-theme h1, 
-        .onepiece-theme h2,
-        .onepiece-theme h3 {
-            font-family: 'Impact', fantasy;
-            color: #d4af37;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-            letter-spacing: 2px;
-        }
+      .onepiece-theme h1,
+      .onepiece-theme h2,
+      .onepiece-theme h3 {
+        font-family: "Impact", fantasy;
+        color: #d4af37;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        letter-spacing: 2px;
+      }
 
-        .onepiece-theme button {
-            background: linear-gradient(45deg, #d4af37, #ffd700);
-            color: #000;
-            font-weight: bold;
-            border: 2px solid #d4af37;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            box-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
-        }
+      .onepiece-theme button {
+        background: linear-gradient(45deg, #d4af37, #ffd700);
+        color: #000;
+        font-weight: bold;
+        border: 2px solid #d4af37;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        box-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+      }
 
-        .cell.coin-symbol {
-            position: relative;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
+      .cell.coin-symbol {
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
 
-        .cell.coin-symbol img {
-            width: 70%;
-            height: 70%;
-            object-fit: contain;
-        }
+      .cell.coin-symbol img {
+        width: 70%;
+        height: 70%;
+        object-fit: contain;
+      }
 
-        .volume-control {
-            margin-top: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
+      .volume-control {
+        margin-top: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+      }
 
-        #volumeToggle {
-            font-size: 24px;
-            padding: 5px 10px;
-            background: #333;
-            border: none;
-            cursor: pointer;
-            border-radius: 5px;
-        }
+      #volumeToggle {
+        font-size: 24px;
+        padding: 5px 10px;
+        background: #333;
+        border: none;
+        cursor: pointer;
+        border-radius: 5px;
+      }
 
-        #volumeSlider {
-            width: 100px;
-            height: 5px;
-            -webkit-appearance: none;
-            background: #444;
-            border-radius: 5px;
-            outline: none;
-        }
+      #volumeSlider {
+        width: 100px;
+        height: 5px;
+        -webkit-appearance: none;
+        background: #444;
+        border-radius: 5px;
+        outline: none;
+      }
 
-        #volumeSlider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 15px;
-            height: 15px;
-            background: #fff;
-            border-radius: 50%;
-            cursor: pointer;
-        }
+      #volumeSlider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 15px;
+        height: 15px;
+        background: #fff;
+        border-radius: 50%;
+        cursor: pointer;
+      }
 
-        .onepiece-theme #volumeToggle,
-        .onepiece-theme #volumeSlider {
-            background: linear-gradient(45deg, #d4af37, #ffd700);
-        }
+      .onepiece-theme #volumeToggle,
+      .onepiece-theme #volumeSlider {
+        background: linear-gradient(45deg, #d4af37, #ffd700);
+      }
 
-        .onepiece-theme #volumeSlider::-webkit-slider-thumb {
-            background: #d4af37;
-            border: 2px solid #ffd700;
-        }
+      .onepiece-theme #volumeSlider::-webkit-slider-thumb {
+        background: #d4af37;
+        border: 2px solid #ffd700;
+      }
 
-        .home-button {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            padding: 10px 20px;
-            font-size: 18px;
-            background: #333;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
+      .home-button {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        padding: 10px 20px;
+        font-size: 18px;
+        background: #333;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
 
-        .home-button:hover {
-            background: #444;
-            transform: scale(1.05);
-        }
+      .home-button:hover {
+        background: #444;
+        transform: scale(1.05);
+      }
 
-        .onepiece-theme .home-button {
-            background: linear-gradient(45deg, #d4af37, #ffd700);
-            color: #000;
-            border: 2px solid #d4af37;
-            box-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
-        }
+      .onepiece-theme .home-button {
+        background: linear-gradient(45deg, #d4af37, #ffd700);
+        color: #000;
+        border: 2px solid #d4af37;
+        box-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+      }
 
-        .onepiece-theme .home-button:hover {
-            background: linear-gradient(45deg, #ffd700, #d4af37);
-            transform: scale(1.05);
-            box-shadow: 0 0 20px rgba(212, 175, 55, 0.7);
-        }
+      .onepiece-theme .home-button:hover {
+        background: linear-gradient(45deg, #ffd700, #d4af37);
+        transform: scale(1.05);
+        box-shadow: 0 0 20px rgba(212, 175, 55, 0.7);
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div id="game">
-        <button class="home-button" onclick="goHome()">🏠 Home</button>
-        <h1>XO</h1>
-        <div id="player-setup">
-            <h2>Enter Your Name</h2>
-            <input type="text" 
-                   id="player-name" 
-                   placeholder="Enter your name">
-            <h2>Choose Your Symbol</h2>
-            <div style="display: flex; justify-content: center; gap: 20px;">
-                <button class="symbol-btn" onclick="selectSymbol('X')">X</button>
-                <button class="symbol-btn" onclick="selectSymbol('O')">O</button>
-            </div>
+      <button class="home-button" onclick="goHome()">🏠 Home</button>
+      <h1>XO</h1>
+      <div id="player-setup">
+        <h2>Enter Your Name</h2>
+        <input type="text" id="player-name" placeholder="Enter your name" />
+        <h2>Choose Your Symbol</h2>
+        <div style="display: flex; justify-content: center; gap: 20px">
+          <button class="symbol-btn" onclick="selectSymbol('X')">X</button>
+          <button class="symbol-btn" onclick="selectSymbol('O')">O</button>
         </div>
+      </div>
 
-        <div id="game-mode-select" style="display: none;">
-            <h2>Select Game Mode</h2>
-            <div style="display: flex; justify-content: center; gap: 20px;">
-                <button class="mode-btn" onclick="startGame('computer')">vs Computer</button>
-                <button class="mode-btn" onclick="startGame('2player')">2 Players</button>
-            </div>
+      <div id="game-mode-select" style="display: none">
+        <h2>Select Game Mode</h2>
+        <div style="display: flex; justify-content: center; gap: 20px">
+          <button class="mode-btn" onclick="startGame('computer')">
+            vs Computer
+          </button>
+          <button class="mode-btn" onclick="startGame('2player')">
+            2 Players
+          </button>
         </div>
+      </div>
 
-        <div id="game-board" style="display: none;">
-            <h2><span id="current-player-display">Player</span>'s Turn (<span id="current-player">X</span>)</h2>
-            <div class="board" id="board"></div>
-            <h3 id="status"></h3>
-            <button onclick="resetGame()">Reset Game</button>
-            <div class="volume-control">
-                <button id="volumeToggle" onclick="toggleVolume()">🔊</button>
-                <input type="range" id="volumeSlider" min="0" max="1" step="0.1" value="1">
-            </div>
+      <div id="game-board" style="display: none">
+        <h2>
+          <span id="current-player-display">Player</span>'s Turn (<span
+            id="current-player"
+            >X</span
+          >)
+        </h2>
+        <div class="board" id="board"></div>
+        <h3 id="status"></h3>
+        <button onclick="resetGame()">Reset Game</button>
+        <div class="volume-control">
+          <button id="volumeToggle" onclick="toggleVolume()">🔊</button>
+          <input
+            type="range"
+            id="volumeSlider"
+            min="0"
+            max="1"
+            step="0.1"
+            value="1"
+          />
         </div>
+      </div>
     </div>
 
     <div class="video-popup" id="videoPopup">
-        <div class="video-container">
-            <span class="close-video" onclick="closeVideo()">&times;</span>
-            <video id="characterVideo" preload="auto" controls>
-                <source src="" type="video/mp4">
-                Your browser does not support the video tag.
-            </video>
-        </div>
+      <div class="video-container">
+        <span class="close-video" onclick="closeVideo()">&times;</span>
+        <video id="characterVideo" preload="auto" controls>
+          <source src="" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+      </div>
     </div>
 
     <!-- Add this audio element -->
     <audio id="backgroundMusic" loop>
-        <source src="./OnepOst.mp3" type="audio/mpeg">
-        Your browser does not support the audio element.
+      <source src="./OnepOst.mp3" type="audio/mpeg" />
+      Your browser does not support the audio element.
     </audio>
 
     <script type="module" src="src/index.js"></script>
     <script>
-        const playerNameInput = document.getElementById('player-name');
-        const videoPopup = document.getElementById('videoPopup');
-        const playerSetup = document.getElementById('player-setup');
-        const gameModeSelect = document.getElementById('game-mode-select');
-        const characterVideo = document.getElementById('characterVideo');
-        let typingTimer;
+      const playerNameInput = document.getElementById("player-name");
+      const videoPopup = document.getElementById("videoPopup");
+      const playerSetup = document.getElementById("player-setup");
+      const gameModeSelect = document.getElementById("game-mode-select");
+      const characterVideo = document.getElementById("characterVideo");
+      let typingTimer;
 
-        // Add input event listener with debouncing
-        playerNameInput.addEventListener('input', function() {
-            clearTimeout(typingTimer);
-            
-            typingTimer = setTimeout(() => {
-                const name = this.value.trim().toLowerCase();
-                
-                if (name === 'luffy' || name === 'zoro' || name === 'joyboy') {
-                    // Set video source based on name
-                    const videoSrc = name === 'luffy' ? './luffy.mp4' : 
-                                   name === 'zoro' ? './zoro.mp4' : './joyboy.mp4';
-                    characterVideo.src = videoSrc;
-                    
-                    characterVideo.load();
-                    videoPopup.classList.add('active');
-                    characterVideo.currentTime = 0;
-                    
-                    const playPromise = characterVideo.play();
-                    if (playPromise !== undefined) {
-                        playPromise
-                            .then(() => {
-                                characterVideo.volume = 1;
-                                console.log('Video started playing');
-                            })
-                            .catch(error => {
-                                console.error("Video playback failed:", error);
-                            });
-                    }
-                } else {
-                    videoPopup.classList.remove('active');
-                    characterVideo.pause();
-                }
-            }, 500);
-        });
+      // Add input event listener with debouncing
+      playerNameInput.addEventListener("input", function () {
+        clearTimeout(typingTimer);
 
-        window.selectSymbol = function(symbol) {
-            const name = playerNameInput.value.trim().toLowerCase();
-            if (!name) {
-                alert('Please enter your name first!');
-                return;
-            }
-            // Always pass 'X' as the symbol
-            continueToGameMode(name, 'X');
-        }
+        typingTimer = setTimeout(() => {
+          const name = this.value.trim().toLowerCase();
 
-        window.closeVideo = function() {
-            videoPopup.classList.remove('active');
-            characterVideo.pause();
+          if (name === "luffy" || name === "zoro" || name === "joyboy") {
+            // Set video source based on name
+            const videoSrc =
+              name === "luffy"
+                ? "./luffy.mp4"
+                : name === "zoro"
+                ? "./zoro.mp4"
+                : "./joyboy.mp4";
+            characterVideo.src = videoSrc;
+
+            characterVideo.load();
+            videoPopup.classList.add("active");
             characterVideo.currentTime = 0;
-        }
 
-        function continueToGameMode(name, symbol) {
-            playerSetup.style.display = 'none';
-            gameModeSelect.style.display = 'block';
-            window.playerName = name;
-            window.playerSymbol = symbol;
-            
-            applyTheme(name);
-        }
-
-        function applyTheme(name) {
-            const gameElement = document.getElementById('game');
-            const body = document.body;
-            
-            // Remove theme first
-            gameElement.classList.remove('onepiece-theme');
-            body.classList.remove('onepiece-theme');
-            
-            if (name.toLowerCase() === 'luffy') {
-                // Add theme
-                gameElement.classList.add('onepiece-theme');
-                body.classList.add('onepiece-theme');
-                document.documentElement.style.setProperty('--theme-color', '#d4af37');
-                
-                // Force reload of background images
-                const board = document.querySelector('.board');
-                if (board) {
-                    board.style.backgroundImage = 'url("./onep.png")';
-                }
-            }
-        }
-
-        function makeComputerMove() {
-            const availableCells = Array.from(document.querySelectorAll('.cell'))
-                .filter(cell => !cell.textContent && !cell.querySelector('img'));
-            
-            if (!availableCells.length) return;
-
-            const isOnePieceTheme = document.getElementById('game').classList.contains('onepiece-theme');
-            const randomCell = availableCells[Math.floor(Math.random() * availableCells.length)];
-
-            if (isOnePieceTheme) {
-                if (computerSymbol === 'X') {
-                    const img = document.createElement('img');
-                    img.src = './strawhat.png';
-                    img.alt = 'X';
-                    randomCell.classList.add('straw-hat-symbol');
-                    randomCell.appendChild(img);
-                } else {
-                    const img = document.createElement('img');
-                    img.src = './coin.png';
-                    img.alt = 'O';
-                    randomCell.classList.add('coin-symbol');
-                    randomCell.appendChild(img);
-                }
-            } else {
-                randomCell.textContent = computerSymbol;
-                if (computerSymbol === 'O') {
-                    randomCell.classList.add('o-symbol');
-                }
-            }
-        }
-
-        let gameMode;
-        let playerSymbol;
-        let computerSymbol;
-        let currentPlayer;
-        const gameBoard = document.getElementById('game-board');
-
-        function startGame(mode) {
-            gameMode = mode;
-            gameModeSelect.style.display = 'none';
-            gameBoard.style.display = 'block';
-            
-            // Initialize board
-            const board = document.getElementById('board');
-            board.innerHTML = '';
-            
-            // Create board cells
-            for (let i = 0; i < 9; i++) {
-                const cell = document.createElement('div');
-                cell.classList.add('cell');
-                cell.setAttribute('data-index', i);
-                cell.addEventListener('click', () => handleCellClick(cell));
-                board.appendChild(cell);
-            }
-
-            // Always set player as X (first player)
-            playerSymbol = 'X';
-            computerSymbol = 'O';
-            currentPlayer = 'X';
-            
-            // Play music if it's One Piece theme
-            if (window.playerName.toLowerCase() === 'luffy') {
-                const backgroundMusic = document.getElementById('backgroundMusic');
-                backgroundMusic.currentTime = 0;
-                backgroundMusic.play().catch(error => {
-                    console.log("Audio playback failed:", error);
+            const playPromise = characterVideo.play();
+            if (playPromise !== undefined) {
+              playPromise
+                .then(() => {
+                  characterVideo.volume = 1;
+                  console.log("Video started playing");
+                })
+                .catch((error) => {
+                  console.error("Video playback failed:", error);
                 });
             }
-            
-            updateDisplay();
+          } else {
+            videoPopup.classList.remove("active");
+            characterVideo.pause();
+          }
+        }, 500);
+      });
+
+      window.selectSymbol = function (symbol) {
+        const name = playerNameInput.value.trim().toLowerCase();
+        if (!name) {
+          alert("Please enter your name first!");
+          return;
+        }
+        // Always pass 'X' as the symbol
+        continueToGameMode(name, "X");
+      };
+
+      window.closeVideo = function () {
+        videoPopup.classList.remove("active");
+        characterVideo.pause();
+        characterVideo.currentTime = 0;
+        applyTheme(playerNameInput.value.trim().toLowerCase());
+      };
+
+      function continueToGameMode(name, symbol) {
+        playerSetup.style.display = "none";
+        gameModeSelect.style.display = "block";
+        window.playerName = name;
+        window.playerSymbol = symbol;
+
+        applyTheme(name);
+      }
+
+      function applyTheme(name) {
+        const gameElement = document.getElementById("game");
+        const body = document.body;
+
+        // Remove theme first
+        gameElement.classList.remove("onepiece-theme");
+        body.classList.remove("onepiece-theme");
+
+        if (name.toLowerCase() === "luffy") {
+          // Add theme
+          gameElement.classList.add("onepiece-theme");
+          body.classList.add("onepiece-theme");
+          document.documentElement.style.setProperty(
+            "--theme-color",
+            "#d4af37"
+          );
+
+          // Force reload of background images
+          const board = document.querySelector(".board");
+          if (board) {
+            board.style.backgroundImage = 'url("./onep.png")';
+          }
+        }
+      }
+
+      function makeComputerMove() {
+        const availableCells = Array.from(
+          document.querySelectorAll(".cell")
+        ).filter((cell) => !cell.textContent && !cell.querySelector("img"));
+
+        if (!availableCells.length) return;
+
+        const isOnePieceTheme = document
+          .getElementById("game")
+          .classList.contains("onepiece-theme");
+        const randomCell =
+          availableCells[Math.floor(Math.random() * availableCells.length)];
+
+        if (isOnePieceTheme) {
+          if (computerSymbol === "X") {
+            const img = document.createElement("img");
+            img.src = "./strawhat.png";
+            img.alt = "X";
+            randomCell.classList.add("straw-hat-symbol");
+            randomCell.appendChild(img);
+          } else {
+            const img = document.createElement("img");
+            img.src = "./coin.png";
+            img.alt = "O";
+            randomCell.classList.add("coin-symbol");
+            randomCell.appendChild(img);
+          }
+        } else {
+          randomCell.textContent = computerSymbol;
+          if (computerSymbol === "O") {
+            randomCell.classList.add("o-symbol");
+          }
+        }
+      }
+
+      let gameMode;
+      let playerSymbol;
+      let computerSymbol;
+      let currentPlayer;
+      const gameBoard = document.getElementById("game-board");
+
+      function startGame(mode) {
+        gameMode = mode;
+        gameModeSelect.style.display = "none";
+        gameBoard.style.display = "block";
+
+        // Initialize board
+        const board = document.getElementById("board");
+        board.innerHTML = "";
+
+        // Create board cells
+        for (let i = 0; i < 9; i++) {
+          const cell = document.createElement("div");
+          cell.classList.add("cell");
+          cell.setAttribute("data-index", i);
+          cell.addEventListener("click", () => handleCellClick(cell));
+          board.appendChild(cell);
         }
 
-        // Add reset game function if not already present
-        window.resetGame = function() {
-            if (window.playerName.toLowerCase() === 'luffy') {
-                document.getElementById('game').classList.add('onepiece-theme');
-                // Ensure music continues playing
-                const backgroundMusic = document.getElementById('backgroundMusic');
-                if (backgroundMusic.paused) {
-                    backgroundMusic.play().catch(error => {
-                        console.log("Audio playback failed:", error);
-                    });
-                }
-            }
-            startGame(gameMode);
+        // Always set player as X (first player)
+        playerSymbol = "X";
+        computerSymbol = "O";
+        currentPlayer = "X";
+
+        // Play music if it's One Piece theme
+        if (window.playerName.toLowerCase() === "luffy") {
+          const backgroundMusic = document.getElementById("backgroundMusic");
+          backgroundMusic.currentTime = 0;
+          backgroundMusic.play().catch((error) => {
+            console.log("Audio playback failed:", error);
+          });
         }
 
-        // Modify the handleCellClick function
-        function handleCellClick(cell) {
-            if (cell.textContent || cell.querySelector('img') || checkWin()) return;
-            
-            const isOnePieceTheme = document.getElementById('game').classList.contains('onepiece-theme');
-            
-            // Handle move for current player
-            if (isOnePieceTheme) {
-                if (currentPlayer === 'X') {
-                    const img = document.createElement('img');
-                    img.src = './strawhat.png';
-                    img.alt = 'X';
-                    cell.classList.add('straw-hat-symbol');
-                    cell.appendChild(img);
-                } else {
-                    const img = document.createElement('img');
-                    img.src = './coin.png';
-                    img.alt = 'O';
-                    cell.classList.add('coin-symbol');
-                    cell.appendChild(img);
-                }
-            } else {
-                cell.textContent = currentPlayer;
-                if (currentPlayer === 'O') {
-                    cell.classList.add('o-symbol');
-                }
-            }
-            
-            if (checkWin()) {
-                const winner = currentPlayer === 'X' ? window.playerName : 'Player 2';
-                document.getElementById('status').textContent = `${winner} Wins!`;
-                return;
-            }
+        updateDisplay();
+      }
 
-            if (checkDraw()) {
-                document.getElementById('status').textContent = "It's a Draw!";
-                return;
-            }
-
-            // Switch turns
-            if (gameMode === '2player') {
-                currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
-                updateDisplay();
-            } else if (gameMode === 'computer' && currentPlayer === playerSymbol) {
-                // Computer mode logic
-                currentPlayer = computerSymbol;
-                updateDisplay();
-                setTimeout(() => {
-                    makeComputerMove();
-                    if (checkWin()) {
-                        document.getElementById('status').textContent = 'Computer Wins!';
-                        return;
-                    }
-                    if (checkDraw()) {
-                        document.getElementById('status').textContent = "It's a Draw!";
-                        return;
-                    }
-                    currentPlayer = playerSymbol;
-                    updateDisplay();
-                }, 500);
-            }
-        }
-
-        // Update the updateDisplay function to show proper names
-        function updateDisplay() {
-            document.getElementById('current-player').textContent = currentPlayer;
-            if (gameMode === 'computer') {
-                document.getElementById('current-player-display').textContent = 
-                    currentPlayer === playerSymbol ? window.playerName : 'Computer';
-            } else {
-                // For 2 player mode, you might want to handle this differently
-                document.getElementById('current-player-display').textContent = 
-                    currentPlayer === playerSymbol ? window.playerName : 'Player 2';
-            }
-        }
-
-        // Add this helper function
-        function checkDraw() {
-            return [...document.querySelectorAll('.cell')]
-                .every(cell => cell.textContent || cell.querySelector('img'));
-        }
-
-        // Modify the checkWin function to handle images
-        function checkWin() {
-            const winPatterns = [
-                [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
-                [0, 3, 6], [1, 4, 7], [2, 5, 8], // Columns
-                [0, 4, 8], [2, 4, 6]             // Diagonals
-            ];
-
-            const cells = Array.from(document.querySelectorAll('.cell'));
-            const getCellSymbol = (cell) => {
-                const img = cell.querySelector('img');
-                if (img) {
-                    return img.alt; // Get X or O from alt attribute
-                }
-                return cell.textContent;
-            };
-
-            // Check for three in a row
-            return winPatterns.some(pattern => {
-                const [a, b, c] = pattern;
-                const symbolA = getCellSymbol(cells[a]);
-                const symbolB = getCellSymbol(cells[b]);
-                const symbolC = getCellSymbol(cells[c]);
-                
-                // Must have all three positions filled and matching
-                return symbolA && 
-                       symbolB && 
-                       symbolC && 
-                       symbolA === symbolB && 
-                       symbolB === symbolC;
+      // Add reset game function if not already present
+      window.resetGame = function () {
+        if (window.playerName.toLowerCase() === "luffy") {
+          document.getElementById("game").classList.add("onepiece-theme");
+          // Ensure music continues playing
+          const backgroundMusic = document.getElementById("backgroundMusic");
+          if (backgroundMusic.paused) {
+            backgroundMusic.play().catch((error) => {
+              console.log("Audio playback failed:", error);
             });
+          }
+        }
+        startGame(gameMode);
+      };
+
+      // Modify the handleCellClick function
+      function handleCellClick(cell) {
+        if (cell.textContent || cell.querySelector("img") || checkWin()) return;
+
+        const isOnePieceTheme = document
+          .getElementById("game")
+          .classList.contains("onepiece-theme");
+
+        // Handle move for current player
+        if (isOnePieceTheme) {
+          if (currentPlayer === "X") {
+            const img = document.createElement("img");
+            img.src = "./strawhat.png";
+            img.alt = "X";
+            cell.classList.add("straw-hat-symbol");
+            cell.appendChild(img);
+          } else {
+            const img = document.createElement("img");
+            img.src = "./coin.png";
+            img.alt = "O";
+            cell.classList.add("coin-symbol");
+            cell.appendChild(img);
+          }
+        } else {
+          cell.textContent = currentPlayer;
+          if (currentPlayer === "O") {
+            cell.classList.add("o-symbol");
+          }
         }
 
-        // Add these functions for volume control
-        let isMuted = false;
+        if (checkWin()) {
+          const winner = currentPlayer === "X" ? window.playerName : "Player 2";
+          document.getElementById("status").textContent = `${winner} Wins!`;
+          return;
+        }
 
-        function toggleVolume() {
-            const backgroundMusic = document.getElementById('backgroundMusic');
-            const volumeToggle = document.getElementById('volumeToggle');
-            const volumeSlider = document.getElementById('volumeSlider');
-            
-            isMuted = !isMuted;
-            
-            if (isMuted) {
-                backgroundMusic.volume = 0;
-                volumeToggle.textContent = '🔇';
-                volumeSlider.value = 0;
-            } else {
-                backgroundMusic.volume = volumeSlider.value;
-                volumeToggle.textContent = '🔊';
+        if (checkDraw()) {
+          document.getElementById("status").textContent = "It's a Draw!";
+          return;
+        }
+
+        // Switch turns
+        if (gameMode === "2player") {
+          currentPlayer = currentPlayer === "X" ? "O" : "X";
+          updateDisplay();
+        } else if (gameMode === "computer" && currentPlayer === playerSymbol) {
+          // Computer mode logic
+          currentPlayer = computerSymbol;
+          updateDisplay();
+          setTimeout(() => {
+            makeComputerMove();
+            if (checkWin()) {
+              document.getElementById("status").textContent = "Computer Wins!";
+              return;
             }
+            if (checkDraw()) {
+              document.getElementById("status").textContent = "It's a Draw!";
+              return;
+            }
+            currentPlayer = playerSymbol;
+            updateDisplay();
+          }, 500);
         }
+      }
 
-        // Add volume slider event listener
-        document.getElementById('volumeSlider').addEventListener('input', function() {
-            const backgroundMusic = document.getElementById('backgroundMusic');
-            const volumeToggle = document.getElementById('volumeToggle');
-            
-            backgroundMusic.volume = this.value;
-            isMuted = this.value === '0';
-            volumeToggle.textContent = isMuted ? '🔇' : '🔊';
+      // Update the updateDisplay function to show proper names
+      function updateDisplay() {
+        document.getElementById("current-player").textContent = currentPlayer;
+        if (gameMode === "computer") {
+          document.getElementById("current-player-display").textContent =
+            currentPlayer === playerSymbol ? window.playerName : "Computer";
+        } else {
+          // For 2 player mode, you might want to handle this differently
+          document.getElementById("current-player-display").textContent =
+            currentPlayer === playerSymbol ? window.playerName : "Player 2";
+        }
+      }
+
+      // Add this helper function
+      function checkDraw() {
+        return [...document.querySelectorAll(".cell")].every(
+          (cell) => cell.textContent || cell.querySelector("img")
+        );
+      }
+
+      // Modify the checkWin function to handle images
+      function checkWin() {
+        const winPatterns = [
+          [0, 1, 2],
+          [3, 4, 5],
+          [6, 7, 8], // Rows
+          [0, 3, 6],
+          [1, 4, 7],
+          [2, 5, 8], // Columns
+          [0, 4, 8],
+          [2, 4, 6], // Diagonals
+        ];
+
+        const cells = Array.from(document.querySelectorAll(".cell"));
+        const getCellSymbol = (cell) => {
+          const img = cell.querySelector("img");
+          if (img) {
+            return img.alt; // Get X or O from alt attribute
+          }
+          return cell.textContent;
+        };
+
+        // Check for three in a row
+        return winPatterns.some((pattern) => {
+          const [a, b, c] = pattern;
+          const symbolA = getCellSymbol(cells[a]);
+          const symbolB = getCellSymbol(cells[b]);
+          const symbolC = getCellSymbol(cells[c]);
+
+          // Must have all three positions filled and matching
+          return (
+            symbolA &&
+            symbolB &&
+            symbolC &&
+            symbolA === symbolB &&
+            symbolB === symbolC
+          );
+        });
+      }
+
+      // Add these functions for volume control
+      let isMuted = false;
+
+      function toggleVolume() {
+        const backgroundMusic = document.getElementById("backgroundMusic");
+        const volumeToggle = document.getElementById("volumeToggle");
+        const volumeSlider = document.getElementById("volumeSlider");
+
+        isMuted = !isMuted;
+
+        if (isMuted) {
+          backgroundMusic.volume = 0;
+          volumeToggle.textContent = "🔇";
+          volumeSlider.value = 0;
+        } else {
+          backgroundMusic.volume = volumeSlider.value;
+          volumeToggle.textContent = "🔊";
+        }
+      }
+
+      // Add volume slider event listener
+      document
+        .getElementById("volumeSlider")
+        .addEventListener("input", function () {
+          const backgroundMusic = document.getElementById("backgroundMusic");
+          const volumeToggle = document.getElementById("volumeToggle");
+
+          backgroundMusic.volume = this.value;
+          isMuted = this.value === "0";
+          volumeToggle.textContent = isMuted ? "🔇" : "🔊";
         });
 
-        // Add home button functionality
-        function goHome() {
-            // Reset game state
-            gameBoard.style.display = 'none';
-            gameModeSelect.style.display = 'none';
-            playerSetup.style.display = 'block';
-            
-            // Clear player name input
-            playerNameInput.value = '';
-            
-            // Reset status
-            document.getElementById('status').textContent = '';
-            
-            // Stop music if playing
-            const backgroundMusic = document.getElementById('backgroundMusic');
-            backgroundMusic.pause();
-            backgroundMusic.currentTime = 0;
-            
-            // Remove theme
-            const gameElement = document.getElementById('game');
-            const body = document.body;
-            gameElement.classList.remove('onepiece-theme');
-            body.classList.remove('onepiece-theme');
-            
-            // Reset volume controls
-            document.getElementById('volumeToggle').textContent = '🔊';
-            document.getElementById('volumeSlider').value = 1;
-            isMuted = false;
-        }
+      // Add home button functionality
+      function goHome() {
+        // Reset game state
+        gameBoard.style.display = "none";
+        gameModeSelect.style.display = "none";
+        playerSetup.style.display = "block";
+
+        // Clear player name input
+        playerNameInput.value = "";
+
+        // Reset status
+        document.getElementById("status").textContent = "";
+
+        // Stop music if playing
+        const backgroundMusic = document.getElementById("backgroundMusic");
+        backgroundMusic.pause();
+        backgroundMusic.currentTime = 0;
+
+        // Remove theme
+        const gameElement = document.getElementById("game");
+        const body = document.body;
+        gameElement.classList.remove("onepiece-theme");
+        body.classList.remove("onepiece-theme");
+
+        // Reset volume controls
+        document.getElementById("volumeToggle").textContent = "🔊";
+        document.getElementById("volumeSlider").value = 1;
+        isMuted = false;
+      }
     </script>
-</body>
+  </body>
 </html>
